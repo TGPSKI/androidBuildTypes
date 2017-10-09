@@ -67,6 +67,7 @@ GEM
       badge (~> 0.8.2)
     fastlane-plugin-get_version_code (0.2.0)
     fastlane-plugin-get_version_name (0.2.2)
+    fastlane-plugin-yarn (1.0)
     gh_inspector (1.0.3)
     google-api-client (0.13.6)
       addressable (~> 2.5, >= 2.5.1)
@@ -147,6 +148,7 @@ DEPENDENCIES
   fastlane-plugin-badge
   fastlane-plugin-get_version_code
   fastlane-plugin-get_version_name
+  fastlane-plugin-yarn
 
 BUNDLED WITH
    1.13.6
