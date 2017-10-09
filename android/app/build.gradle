@@ -73,8 +73,21 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    entryFile: "index.js"
-]
+    nodeExecutableAndArgs: hasProperty('NODE_PATH')?[NODE_PATH]:null,
+    bundleInDebug: false,
+    bundleInStaging: true,
+    bundleInRelease: true,
+    jsBundleDirDebug: "$buildDir/intermediates/assets/debug",
+    resourcesDirDebug: "$buildDir/intermediates/res/merged/debug",
+    jsBundleDirStaging: "$buildDir/intermediates/assets/staging",
+    resourcesDirStaging: "$buildDir/intermediates/res/merged/staging",
+    jsBundleDirRelease: "$buildDir/intermediates/assets/release",
+    resourcesDirRelease: "$buildDir/intermediates/res/merged/release",
+    devDisabledInDebug: false,
+    devDisabledInStaging: true,
+    devDisabledInRelease: true,
+    inputExcludes: ["ios/**", "__tests__/**"]
+];
 
 apply from: "../../node_modules/react-native/react.gradle"
 
@@ -97,6 +110,11 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
+    dexOptions {
+        preDexLibraries false
+        javaMaxHeapSize "8g"
+    }
+
     defaultConfig {
         applicationId "com.androidbuildexample"
         minSdkVersion 16
@@ -105,6 +123,24 @@ android {
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
+        }
+    }
+    signingConfigs {
+        staging {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
+        }
+        release {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
         }
     }
     splits {
@@ -116,9 +152,19 @@ android {
         }
     }
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
+        staging {
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+            applicationIdSuffix ".staging"
+        }
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
