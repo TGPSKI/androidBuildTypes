@@ -1,0 +1,108 @@
+# Customise this file, documentation can be found here:
+# https://github.com/fastlane/fastlane/tree/master/fastlane/docs
+# All available actions: https://docs.fastlane.tools/actions
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "2.59.0"
+
+default_platform :android
+
+before_all do
+  update_fastlane
+  yarn(
+    command: "install",
+    package_path: "./package.json"
+  )
+  ANDROID_VERSION_NAME = get_version_name(
+        gradle_file_path:"android/app/build.gradle",
+        ext_constant_name:"versionName"
+  )
+  ANDROID_VERSION_CODE = get_version_code(
+    gradle_file_path:"android/app/build.gradle",
+    ext_constant_name:"versionCode"
+  )
+  puts ""
+  puts ""
+  puts "Android Binary Version: " + ANDROID_VERSION_NAME
+  puts "Android Binary Revision: " + ANDROID_VERSION_CODE
+  puts ""
+end
+
+###############################
+###############################
+########### Android ###########
+###############################
+###############################
+
+platform :android do
+
+  private_lane :clean_android do
+    gradle(task: 'clean', project_dir: "./android/")
+  end
+
+  desc "Clean, build development release"
+  lane :dev do |options|
+    if options[:clean]
+      clean_android
+    end
+
+    if options[:badge]
+      add_badge(
+        shield: "#{ANDROID_VERSION_NAME}-#{ANDROID_VERSION_CODE}-orange",
+        glob: "/android/app/src/main/res/mipmap-*/ic_launcher.png",
+        alpha: true,
+        shield_scale: "0.75"
+      )
+    end
+
+    gradle(task: "assemble", build_type: "debug", project_dir: "./android/")
+  end
+
+  desc "Clean, build, and push a staging release to Fabric"
+  lane :beta do |options|
+    if options[:clean]
+      clean_android
+    end
+
+    if options[:badge]
+      add_badge(
+        shield: "#{ANDROID_VERSION_NAME}-#{ANDROID_VERSION_CODE}-blue",
+        glob: "/android/app/src/main/res/mipmap-*/ic_launcher.png",
+        shield_scale: "0.75"
+      )
+    end
+
+    # build the release staging variant
+    gradle(task: "assemble", build_type: "staging", project_dir: "./android/")
+
+    # upload to Beta by Crashlytics
+    if ENV["CRASHLYTICS_API_KEY"] && ENV["CRASHLYTICS_BUILD_SECRET"]
+      crashlytics(
+        api_token: ENV["CRASHLYTICS_API_KEY"],
+        build_secret: ENV["CRASHLYTICS_BUILD_SECRET"],
+        groups: ["your-test-groups-here"],
+        notes: "#{ANDROID_VERSION_NAME}-#{ANDROID_VERSION_CODE} beta release - fastlane generated",
+        notifications: true
+      )
+    end
+  end
+
+  desc "Clean, build, and push a release to the alpha track on Google Play Dev Console"
+  lane :prod do |options|
+    clean_android
+
+    # build the release variant
+    gradle(task: "assemble", build_type: "release", project_dir: "./android/")
+
+    if options[:play_store]
+      # upload to alpha track on google play developer's console
+      supply(track: "alpha", apk: "android/app/build/outputs/apk/app-release.apk")
+    end
+  end
+end
+
