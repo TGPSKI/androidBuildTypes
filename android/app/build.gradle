@@ -73,7 +73,8 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    nodeExecutableAndArgs: hasProperty('NODE_PATH')?[NODE_PATH]:null,
+    entryFile: "index.js",
+    nodeExecutableAndArgs: hasProperty('NODE_PATH')?[NODE_PATH]:["node"],
     bundleInDebug: false,
     bundleInStaging: true,
     bundleInRelease: true,
