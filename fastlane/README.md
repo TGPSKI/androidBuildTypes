@@ -35,9 +35,9 @@ xcode-select --install
 fastlane android dev
 ```
 Clean, build development release
-### android beta
+### android staging
 ```
-fastlane android beta
+fastlane android staging
 ```
 Clean, build, and push a staging release to Fabric
 ### android prod

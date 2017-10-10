@@ -64,7 +64,7 @@ platform :android do
   end
 
   desc "Clean, build, and push a staging release to Fabric"
-  lane :beta do |options|
+  lane :staging do |options|
     if options[:clean]
       clean_android
     end
@@ -81,10 +81,10 @@ platform :android do
     gradle(task: "assemble", build_type: "staging", project_dir: "./android/")
 
     # upload to Beta by Crashlytics
-    if ENV["CRASHLYTICS_API_KEY"] && ENV["CRASHLYTICS_BUILD_SECRET"]
+    if options[:CRASHLYTICS_API_KEY] && options[:CRASHLYTICS_BUILD_SECRET]
       crashlytics(
-        api_token: ENV["CRASHLYTICS_API_KEY"],
-        build_secret: ENV["CRASHLYTICS_BUILD_SECRET"],
+        api_token: options[:CRASHLYTICS_API_KEY],
+        build_secret: options[:CRASHLYTICS_BUILD_SECRET],
         groups: ["your-test-groups-here"],
         notes: "#{ANDROID_VERSION_NAME}-#{ANDROID_VERSION_CODE} beta release - fastlane generated",
         notifications: true
