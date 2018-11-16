@@ -1,6 +1,17 @@
 # Android + React Native + Fastlane: Working with multiple build types
 
-This is the companion repository for [my medium post](https://medium.com/p/a9a6641c5704/).
+This is the companion repository for [my medium post](https://medium.com/@tgpski/android-react-native-fastlane-working-with-multiple-build-types-a9a6641c5704).
+
+
+## Check out the **[React Native DevOps Guide!!!](https://medium.com/@tgpski/react-native-devops-guide-2d8e4755ebee)**
+
+The DevOps Guide includes concept discussion and step by step walkthroughs for setting up your own Jenkins agent and running iOS and Android builds, plus a whole lot more.
+
+[Running Android Builds, Part 4 - React Native DevOps Guide](https://medium.com/@tgpski/running-android-builds-part-4-react-native-devops-guide-ddc36c12061
+)
+
+---------------
+
 
 ## Gradle Configurations
 
